@@ -1,15 +1,44 @@
 package sudoku;
 
+/**
+ * 
+ * @author Cudelcu Valentin Emil
+ *
+ *The CellIndexesPair class is used to create
+ *a (row, col) pair where row and col are ints
+ *Contains final variables because the variables
+ *are initiated only once
+ */
 public class CellIndexesPair {
 
 	private final int row;
 	private final int col;
 	
-	public CellIndexesPair (int aRow, int aCol) {
+	/**
+	 * Default constructor for CellIndexePair
+	 * Sets the row and col
+	 * @param aRow
+	 * @param aCol
+	 */
+
+	public CellIndexesPair(int aRow, int aCol) {
 		row = aRow;
 		col = aCol;
 	}
-	
-	public int row() { return row;}
-	public int col() { return col;}
+
+	/**
+	 * Returns the row from the pair
+	 * @return int
+	 */
+	public int row() {
+		return row;
+	}
+
+	/**
+	 * Returns the col from the pair
+	 * @return int
+	 */
+	public int col() {
+		return col;
+	}
 }
