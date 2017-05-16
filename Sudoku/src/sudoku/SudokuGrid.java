@@ -1,21 +1,18 @@
 package sudoku;
 
-import javafx.event.EventHandler;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 
 /**
- * 
- * @author Cudelcu Valentin Emil
- *
- *The SudokuGrid class creates a 9x9 grid which contains
+ *The sudokuGridPane class creates a 9x9 grid which contains
  *numbers from 1 to 9. This is the grid where the player
  *will solve the sudoku
+ *
+ * @author Cudelcu Valentin Emil
+ * @version 1.0
  */
 
 public class SudokuGrid {
@@ -29,7 +26,7 @@ public class SudokuGrid {
 	/**
 	 * Grid for the TextFields
 	 */
-	private GridPane sudokuGrid;
+	private GridPane sudokuGridPane;
 	
 	/**
 	 * Index of the selected row
@@ -79,7 +76,7 @@ public class SudokuGrid {
 
 	public SudokuGrid(AnchorPane gameRoot) {
 		this.sudokuCells = new TextField[Utility.GRID_SIZE][Utility.GRID_SIZE];
-		this.sudokuGrid = new GridPane();
+		this.sudokuGridPane = new GridPane();
 		this.selectedCellRow = 0;
 		this.selectedCellCol = 0;
 		this.sudokuChecker = new SudokuChecker();
@@ -89,13 +86,13 @@ public class SudokuGrid {
 		createSudokuCells();
 		setGridValues(null);
 
-		this.sudokuGrid.setPrefSize(432, 432); // size of cell set in style.css  = 48px(3em) * 9
-		this.sudokuGrid.getStylesheets().add("style.css");
+		this.sudokuGridPane.setPrefSize(432, 432); // size of cell set in style.css  = 48px(3em) * 9
+		this.sudokuGridPane.getStylesheets().add("style.css");
 
 	}
 
 	/*
-	 * Creates 9x9 = 81 cells using StackPane and adds them to the sudokuGrid
+	 * Creates 9x9 = 81 cells using StackPane and adds them to the sudokuGridPane
 	 */
 	private void createSudokuCells() {
 		for (int row = 0; row < Utility.GRID_SIZE; row++) {
@@ -106,7 +103,7 @@ public class SudokuGrid {
 
 				addBackground(cell, row, col);
 
-				this.sudokuGrid.add(cell, col, row);
+				this.sudokuGridPane.add(cell, col, row);
 			}
 		}
 	}
@@ -121,23 +118,17 @@ public class SudokuGrid {
 			public void replaceText(int start, int end, String text) {
 				// If the replaced text would end up being invalid, then simply
 				// ignore this call!
-				if (text.matches("\\d?")) {
+				if (text.matches("^[1-9]\\d?")) {
 					super.setText(text);
-					if (text != "") { // check only if exists number
+					if (!text.isEmpty()) { // check only if exists number
 						checkIfCorectly(row, col, Integer.parseInt(text));
 					}
 					changeUserCellValue(row, col, text);
 				}
 			}
 		};
-		this.sudokuCells[row][col].setOnMouseClicked(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent mouseEvent) {
-				if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-					cellSelected(row, col);
-				}
-			}
-		});
+
+		this.sudokuCells[row][col].setOnMousePressed(actionEvent -> cellSelected(row,col));
 		return this.sudokuCells[row][col];
 	}
 
@@ -190,7 +181,7 @@ public class SudokuGrid {
 	 * @param value - the new user input value
 	 */
 	public void changeUserCellValue(int row, int col, String value) {
-		if (value == "") {
+		if (value.isEmpty()) {
 			this.userSudokuValues[row][col] = 0;
 		} else {
 			this.userSudokuValues[row][col] = Integer.parseInt(value);
@@ -202,6 +193,7 @@ public class SudokuGrid {
 
 	/*
 	 * Finish the game ==> disable every Cell
+	 * and add Congratulations text
 	 */
 	private void finishGame() {
 		for (int row = 0; row < Utility.GRID_SIZE; row++) {
@@ -250,8 +242,8 @@ public class SudokuGrid {
 	 * Returns the Sudoku Grid
 	 * @return GridPane
 	 */
-	public GridPane getGrid() {
-		return this.sudokuGrid;
+	public GridPane getGridPane() {
+		return this.sudokuGridPane;
 	}
 
 	/**
@@ -262,7 +254,15 @@ public class SudokuGrid {
 	public int getSelectedCellRow() {
 		return this.selectedCellRow;
 	}
-
+	
+	/**
+	 * Returns the Root Pane (Main Pane)
+	 * @return AnchorPane
+	 */
+	public AnchorPane getRootPane() {
+		return this.gameRoot;
+	}
+	
 	/**
 	 * Returns the SelectedCellCol
 	 * The Cell selected by user
@@ -282,9 +282,7 @@ public class SudokuGrid {
 
 	/**
 	 * Sets the sudokuCells array
-	 * Used in the SudokuButtons class
-	 * @see SudokuButtons#InsertDigit()
-	 * @param sudokuCells
+	 * @param sudokuCells	new TextField[][] array
 	 */
 	public void setSudokuCells(TextField[][] sudokuCells) {
 		this.sudokuCells = sudokuCells;

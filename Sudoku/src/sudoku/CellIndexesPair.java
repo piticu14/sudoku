@@ -1,13 +1,13 @@
 package sudoku;
 
 /**
- * 
- * @author Cudelcu Valentin Emil
- *
  *The CellIndexesPair class is used to create
  *a (row, col) pair where row and col are ints
  *Contains final variables because the variables
  *are initiated only once
+ *
+ * @author Cudelcu Valentin Emil
+ * @version 1.0
  */
 public class CellIndexesPair {
 
@@ -17,8 +17,8 @@ public class CellIndexesPair {
 	/**
 	 * Default constructor for CellIndexePair
 	 * Sets the row and col
-	 * @param aRow
-	 * @param aCol
+	 * @param aRow	cell row
+	 * @param aCol	cell col
 	 */
 
 	public CellIndexesPair(int aRow, int aCol) {

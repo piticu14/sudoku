@@ -1,24 +1,22 @@
 package sudoku;
 
-import java.util.Random;
+import java.util.List;
 
-import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 
 /**
- * 
- * @author Cudelcu Valentin Emil
- *
  *The SudokuButtons class contains every button
  *which appears in the Application
  *The types of button includes digit buttons and 
  *game buttons
+ *
+ *@author Cudelcu Valentin Emil
+ *@version 1.0
  */
 public class SudokuButtons {
 	
@@ -34,18 +32,19 @@ public class SudokuButtons {
 	private HBox digitButtons;
 	
 	/**
-	 * Contains the nstace of the SudokuGrid class
-	 */
+	 * Contains the instance of the SudokuGrid class
+	 */	
 	private SudokuGrid sudokuGrid;
-
+	
 	/**
 	 * Default constructor for SudokuButtons
 	 * Initializes the private variables
 	 * Calls the createGameButtons and createDigitButtons methods
 	 * @see #createGameButtons()
 	 * @see #createDigitButtons()
-	 * @param sudokuGrid - contains the instace of SudokuGrid class
+	 * @param sudokuGridPane - contains the instance of sudokuGridPane class
 	 */
+	
 	public SudokuButtons(SudokuGrid sudokuGrid) {
 		this.sudokuGrid = sudokuGrid;
 		this.gameButtons = new VBox();
@@ -71,13 +70,7 @@ public class SudokuButtons {
 	private Button newGameButton() {
 		Button newGame = new Button("New Game");
 		newGame.setId("record-sales");
-		newGame.setOnMouseClicked(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent mouseEvent) {
-				if (mouseEvent.getButton().equals(MouseButton.PRIMARY))
-					createNewGame();
-			}
-		});
+		newGame.setOnAction(actionEvent -> createNewGame());
 		return newGame;
 	}
 
@@ -86,6 +79,14 @@ public class SudokuButtons {
 	 */
 	private void createNewGame() {
 		this.sudokuGrid.setGridValues(null);
+		this.gameButtons.getChildren().get(1).setDisable(false);
+
+		int sizeOfRootPane = this.sudokuGrid.getRootPane().getChildren().size();
+		
+		//if the game is finished, delete the congratulations text
+		if(this.sudokuGrid.getRootPane().getChildren().get(sizeOfRootPane - 1) instanceof Text){
+			this.sudokuGrid.getRootPane().getChildren().remove(sizeOfRootPane - 1);
+		}
 	}
 
 	private Button hintButton() {
@@ -93,39 +94,52 @@ public class SudokuButtons {
 		hint.setText("Hint");
 		hint.setPrefSize(75, 20); // Size of newGame Button
 		hint.setId("record-sales");
-		hint.setOnMouseClicked(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent mouseEvent) {
-				if (mouseEvent.getButton().equals(MouseButton.PRIMARY))
-					addHint();
-			}
-		});
+		hint.setOnAction(actionEvent -> addHint());
 		return hint;
 	}
 
 	/*
-	 * Randomly select a row and insert the right number
+	 * Randomly select a cell and insert the right number
 	 */
 	private void addHint() {
-		Random random = new Random();
-		int row = random.nextInt(Utility.GRID_SUBSIZE);
-		int col = random.nextInt(Utility.GRID_SUBSIZE);
+		List<CellIndexesPair> removedCells = this.sudokuGrid.getSudokuGenerator().getSudokuSolver().getRemovedCells();
 		int[][] solverValues = this.sudokuGrid.getSudokuGenerator().getSudokuSolver().getSolverValues();
+		boolean hintFound = false;
+		int removedCellIndex = 0;
+		int row = 0;
+		int col = 0;
+		
+		while(!hintFound) {
+			row = removedCells.get(removedCellIndex).row();
+			col = removedCells.get(removedCellIndex).col();
+			TextField cell = this.sudokuGrid.getSudokuCells()[row][col];
+			
+			if(cell.getText().isEmpty()) {
+				hintFound = true;
+			} else{
+				if(Integer.valueOf(cell.getText()) != solverValues[row][col]) {
+					hintFound = true;
+				}
+			}
+			removedCellIndex++;
+			
+			if(removedCellIndex == removedCells.size()){
+				hintFound = true; //Table is full filled
+				this.gameButtons.getChildren().get(1).setDisable(true);
+			}
+		}
+
+		this.sudokuGrid.getSudokuCells()[row][col].setStyle("-fx-text-fill: #ff00b4");
 		this.sudokuGrid.getSudokuCells()[row][col].setText(String.valueOf(solverValues[row][col]));
 		this.sudokuGrid.getSudokuCells()[row][col].setDisable(true);
+		this.sudokuGrid.changeUserCellValue(row, col, String.valueOf(solverValues[row][col]));
 	}
 
 	private Button resetButton() {
 		Button reset = new Button("Reset");
 		reset.setPrefSize(75, 20); // Size of newGame Button
 		reset.setId("record-sales");
-		reset.setOnMouseClicked(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent mouseEvent) {
-				if (mouseEvent.getButton().equals(MouseButton.PRIMARY))
-					resetGame();
-			}
-		});
+		reset.setOnAction(actionEvent -> resetGame());
 		return reset;
 	}
 
@@ -135,6 +149,13 @@ public class SudokuButtons {
 	 */
 	private void resetGame() {
 		this.sudokuGrid.setGridValues(this.sudokuGrid.getSudokuGenerator().getGeneratorValues());
+		this.gameButtons.getChildren().get(1).setDisable(false);
+		int sizeOfRootPane = this.sudokuGrid.getRootPane().getChildren().size();
+		
+		//if the game is finished, delete the congratulations text
+		if(this.sudokuGrid.getRootPane().getChildren().get(sizeOfRootPane - 1) instanceof Text){
+			this.sudokuGrid.getRootPane().getChildren().remove(sizeOfRootPane - 1);
+		}
 	}
 
 	/*
@@ -147,14 +168,7 @@ public class SudokuButtons {
 			Button digit = new Button(Integer.toString(i));
 			this.digitButtons.getChildren().add(digit);
 			digit.setId("dark-blue");
-			digit.setOnMouseClicked(new EventHandler<MouseEvent>() {
-				@Override
-				public void handle(MouseEvent mouseEvent) {
-					if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-						InsertDigit(digit.getText());
-					}
-				}
-			});
+			digit.setOnAction(actionEvent -> InsertDigit(digit.getText()));
 		}
 		AnchorPane.setBottomAnchor(digitButtons, 20.0);
 		AnchorPane.setLeftAnchor(digitButtons, 5.0);
@@ -169,9 +183,8 @@ public class SudokuButtons {
 		int selectedRow = this.sudokuGrid.getSelectedCellRow();
 		int selectedCol = this.sudokuGrid.getSelectedCellCol();
 		sudokuCells[selectedRow][selectedCol].setText(digit);
-		this.sudokuGrid.setSudokuCells(sudokuCells);
-		this.sudokuGrid.changeUserCellValue(selectedRow, selectedCol, digit);
 		this.sudokuGrid.checkIfCorectly(selectedRow, selectedCol, Integer.parseInt(digit));
+		this.sudokuGrid.changeUserCellValue(selectedRow, selectedCol, digit);
 	}
 
 	/**

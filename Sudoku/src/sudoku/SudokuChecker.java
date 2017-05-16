@@ -1,11 +1,11 @@
 package sudoku;
 
 /**
- * 
- * @author Cudelcu Valentin Emil
- *
  *The SudokuChecker class is used to check the correctness of the selected cell
  *and if the user resolved the sudoku by comparing user values and the solver values
+ *
+ * @author Cudelcu Valentin Emil
+ * @version 1.0
  */
 public class SudokuChecker {
 
@@ -32,13 +32,8 @@ public class SudokuChecker {
 	 *Checks if user resolved the sudoku 
 	 * @return TRUE if the sudoku is resolved, otherwise FALSE
 	 */
-	public boolean isResolved() {
-		if (emptyCell())
-			return false;
-		if (!isValid())
-			return false;
-
-		return true;
+	public boolean isResolved() {	
+		return !emptyCell() && isValid();
 	}
 
 	/*

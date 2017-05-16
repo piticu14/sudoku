@@ -4,13 +4,13 @@ import java.util.Arrays;
 import java.util.Random;
 
 /**
- * 
- * @author Cudelcu Valentin Emil
- *
  * The Utility class is a final class which contains
  * the grid and subgrid size, which are final ints.
  * Contains general methods which aren't specific for
  * the Sudoku classes
+ * 
+ * @author Cudelcu Valentin Emil
+ * @version 1.0
  */
 public final class Utility {
 	public static final int GRID_SIZE = 9;

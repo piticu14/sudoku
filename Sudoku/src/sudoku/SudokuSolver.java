@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
- * @author Cudelcu Valentin Emil
- *
  *The SudokuSolver create a full valid sudoku game
  *for an empty table
  *Resolves Sudoku for a table which is not empty
+ *
+ * @author Cudelcu Valentin Emil
+ * @version 1.0
  */
 public class SudokuSolver {
 
@@ -79,12 +79,13 @@ public class SudokuSolver {
 
 			if (sudokuChecker.isSafe(values, row, col, allowedNum)) {
 				values[row][col] = allowedNum;
-				index++; //if last removed cell was filled then try to fill the removed cells from the List
-				if (index == this.removedCells.size())
+				int nextIndex = index; 
+				nextIndex++;//if last removed cell was filled then try to fill the removed cells from the List
+				if (nextIndex == this.removedCells.size())
 					return true;
-				row = this.removedCells.get(index).row();
-				col = this.removedCells.get(index).col();
-				if (solveSudoku(values, 0, row, col, index))
+				int newRow = this.removedCells.get(nextIndex).row();
+				int newCol = this.removedCells.get(nextIndex).col();
+				if (solveSudoku(values, 0, newRow, newCol, nextIndex))
 					return true;
 			}
 		}
@@ -115,8 +116,10 @@ public class SudokuSolver {
 		for (int i = 0; i < Utility.GRID_SIZE; i++) {
 			int allowedNum = this.allowedNums[i];
 			if (sudokuChecker.isSafe(this.solverValues, row, col, allowedNum)) {
-				this.solverValues[row][col] = allowedNum;
-				if (sudokuChecker.isFilled(row, col))
+				int newRow = row;
+				int newCol = col;
+				this.solverValues[newRow][newCol] = allowedNum;
+				if (sudokuChecker.isFilled(newRow, newCol))
 					return true;
 
 				/*
@@ -124,12 +127,13 @@ public class SudokuSolver {
 				 * and start from the first value
 				 */
 				if (col == 8) {
-					row++;
-					col = 0;
+					newRow = row;
+					newRow++;
+					newCol = 0;
 				} else {
-					col++;
+					newCol++;
 				}
-				if (createValidSudoku(row, col))
+				if (createValidSudoku(newRow, newCol))
 					return true;
 			}
 		}
@@ -143,5 +147,13 @@ public class SudokuSolver {
 	 */
 	public int[][] getSolverValues() {
 		return this.solverValues;
+	}
+	
+	/**
+	 * Returns the list of indexes of the removed cells
+	 * @return int[][]
+	 */
+	public List<CellIndexesPair> getRemovedCells () {
+		return this.removedCells;
 	}
 }
