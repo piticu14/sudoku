@@ -1,3 +1,2 @@
-bin/* linguist-vendored
 doc/* linguist-documentation
-*.rb linguist-language=Java
+*.java linguist-language=Java
